@@ -1,0 +1,4 @@
+venv/ 
+campus_trade.db 
+__pycache__/ 
+*.pyc 
