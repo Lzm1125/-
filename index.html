@@ -1,0 +1,311 @@
+<nav>
+    <a href="index.html">首页</a>
+    <a href="product-list.html">商品列表</a>
+    <a href="product-detail.html">商品详情</a>
+    <a href="user-center.html">个人中心</a>
+    <a href="login.html" id="loginLink">登录</a>
+</nav>
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>首页</title>
+    <style>
+        /* 导航栏样式 */
+        nav {
+            background: #333;
+            padding: 1rem;
+        }
+        nav a {
+            color: white;
+            margin-right: 1rem;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        nav a:hover {
+            text-decoration: underline;
+        }
+        /* 按钮样式 */
+        .btn {
+            padding: 0.5rem 1rem;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .btn:active {
+            background: #0056b3;
+        }
+        /* 加载动画 */
+        .loading {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            color: white;
+            text-align: center;
+            padding-top: 20%;
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航栏 -->
+    <div style="padding: 20px; background: #f5f5f5;">
+    <div style="max-width: 800px; margin: 0 auto;">
+        <input 
+            type="text" 
+            id="searchInput" 
+            placeholder="搜索商品名称或描述..."
+            style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 4px; font-size: 16px;"
+        >
+        <button 
+            id="searchBtn"
+            style="margin-top: 10px; padding: 10px 20px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;"
+        >
+            搜索
+        </button>
+    </div>
+</div>
+    <nav>
+        <a href="index.html">首页</a>
+        <a href="product-list.html">商品列表</a>
+        <a href="product-detail.html">商品详情</a>
+        <a href="user-center.html">个人中心</a>
+    </nav>
+
+    <h1>首页基础结构</h1>
+    <button class="btn" onclick="handleClick()">点击我查看反馈</button>
+
+    <!-- 加载状态 -->
+    <div class="loading" id="loading">加载中...</div>
+
+    <script>
+        // 按钮点击反馈
+        function handleClick() {
+            alert('按钮已点击！');
+        }
+
+        // 模拟页面加载
+        window.addEventListener('load', function() {
+            const loading = document.getElementById('loading');
+            loading.style.display = 'block';
+            setTimeout(() => {
+                loading.style.display = 'none';
+            }, 1000);
+        });
+    </script>
+    <!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>商品发布</title>
+    <style>
+        .publish-container {
+            max-width: 500px;
+            margin: 50px auto;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        input, textarea, select {
+            width: 100%;
+            padding: 8px;
+            box-sizing: border-box;
+        }
+        textarea {
+            height: 100px;
+        }
+        .btn {
+            width: 100%;
+            padding: 10px;
+            background: #28a745;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .btn:active {
+            background: #218838;
+        }
+        .loading {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            color: white;
+            text-align: center;
+            padding-top: 20%;
+        }
+        .error {
+            color: red;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <div class="publish-container">
+        <h2>发布商品</h2>
+        <form id="publishForm">
+            <div class="form-group">
+                <label for="name">商品名称</label>
+                <input type="text" id="name" required>
+                <div class="error" id="nameError"></div>
+            </div>
+            <div class="form-group">
+                <label for="description">商品描述</label>
+                <textarea id="description" required></textarea>
+                <div class="error" id="descError"></div>
+            </div>
+            <div class="form-group">
+                <label for="price">价格</label>
+                <input type="number" id="price" step="0.01" required>
+                <div class="error" id="priceError"></div>
+            </div>
+            <div class="form-group">
+                <label for="category">分类</label>
+                <select id="category" required>
+                    <option value="">请选择分类</option>
+                    <option value="electronics">电子产品</option>
+                    <option value="clothing">服装</option>
+                    <option value="books">书籍</option>
+                    <option value="other">其他</option>
+                </select>
+                <div class="error" id="catError"></div>
+            </div>
+            <div class="form-group">
+                <label for="image">商品图片</label>
+                <input type="file" id="image" accept="image/*">
+            </div>
+            <button type="submit" class="btn">发布商品</button>
+        </form>
+    </div>
+
+    <div class="loading" id="loading">发布中...</div>
+
+    <script>
+        // 搜索功能
+const searchInput = document.getElementById('searchInput');
+const searchBtn = document.getElementById('searchBtn');
+
+// 点击搜索按钮
+searchBtn.addEventListener('click', () => {
+    performSearch();
+});
+
+// 回车触发搜索
+searchInput.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') {
+        performSearch();
+    }
+});
+
+// 执行搜索
+async function performSearch() {
+    const keyword = searchInput.value.trim();
+    if (!keyword) {
+        alert('请输入搜索关键词');
+        return;
+    }
+    // 跳转到商品列表页并携带搜索参数
+    window.location.href = `product-list.html?search=${encodeURIComponent(keyword)}`;
+}
+        const form = document.getElementById('publishForm');
+        const loading = document.getElementById('loading');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            // 1. 表单验证
+            const name = document.getElementById('name').value.trim();
+            const desc = document.getElementById('description').value.trim();
+            const price = document.getElementById('price').value;
+            const category = document.getElementById('category').value;
+
+            let valid = true;
+            if (!name) {
+                document.getElementById('nameError').textContent = '商品名称不能为空';
+                valid = false;
+            } else {
+                document.getElementById('nameError').textContent = '';
+            }
+            if (!desc) {
+                document.getElementById('descError').textContent = '商品描述不能为空';
+                valid = false;
+            } else {
+                document.getElementById('descError').textContent = '';
+            }
+            if (!price || price <= 0) {
+                document.getElementById('priceError').textContent = '价格必须大于0';
+                valid = false;
+            } else {
+                document.getElementById('priceError').textContent = '';
+            }
+            if (!category) {
+                document.getElementById('catError').textContent = '请选择分类';
+                valid = false;
+            } else {
+                document.getElementById('catError').textContent = '';
+            }
+
+            if (!valid) return;
+
+            // 2. 准备提交数据
+            const formData = new FormData();
+            formData.append('name', name);
+            formData.append('description', desc);
+            formData.append('price', price);
+            formData.append('category', category);
+            const imageFile = document.getElementById('image').files[0];
+            if (imageFile) {
+                formData.append('image', imageFile);
+            }
+
+            // 3. 显示加载状态
+            loading.style.display = 'block';
+
+            try {
+                // 4. 调用后端发布接口
+                const res = await fetch('/api/publish', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const data = await res.json();
+
+                if (res.ok) {
+                    alert('商品发布成功！');
+                    window.location.href = 'product-list.html'; // 成功后跳转到商品列表
+                } else {
+                    alert('发布失败：' + data.msg);
+                }
+            } catch (err) {
+                console.error(err);
+                alert('网络错误，请重试');
+            } finally {
+                // 5. 隐藏加载状态
+                loading.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>
+</body>
+</html>
