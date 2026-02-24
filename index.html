@@ -4,22 +4,7 @@
     <a href="product-detail.html">商品详情</a>
     <a href="user-center.html">个人中心</a>
     <a href="login.html" id="loginLink">登录</a>
-</nav><div style="padding: 20px; background: #f5f5f5;">
-    <div style="max-width: 800px; margin: 0 auto;">
-        <input 
-            type="text" 
-            id="searchInput" 
-            placeholder="搜索商品名称或描述..."
-            style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 4px; font-size: 16px;"
-        >
-        <button 
-            id="searchBtn"
-            style="margin-top: 10px; padding: 10px 20px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;"
-        >
-            搜索
-        </button>
-    </div>
-</div>
+</nav>
 
 <!DOCTYPE html>
 <html lang="zh-CN">
@@ -72,6 +57,22 @@
 </head>
 <body>
     <!-- 导航栏 -->
+    <div style="padding: 20px; background: #f5f5f5;">
+    <div style="max-width: 800px; margin: 0 auto;">
+        <input 
+            type="text" 
+            id="searchInput" 
+            placeholder="搜索商品名称或描述..."
+            style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 4px; font-size: 16px;"
+        >
+        <button 
+            id="searchBtn"
+            style="margin-top: 10px; padding: 10px 20px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;"
+        >
+            搜索
+        </button>
+    </div>
+</div>
     <nav>
         <a href="index.html">首页</a>
         <a href="product-list.html">商品列表</a>
@@ -200,6 +201,32 @@
     <div class="loading" id="loading">发布中...</div>
 
     <script>
+        // 搜索功能
+const searchInput = document.getElementById('searchInput');
+const searchBtn = document.getElementById('searchBtn');
+
+// 点击搜索按钮
+searchBtn.addEventListener('click', () => {
+    performSearch();
+});
+
+// 回车触发搜索
+searchInput.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') {
+        performSearch();
+    }
+});
+
+// 执行搜索
+async function performSearch() {
+    const keyword = searchInput.value.trim();
+    if (!keyword) {
+        alert('请输入搜索关键词');
+        return;
+    }
+    // 跳转到商品列表页并携带搜索参数
+    window.location.href = `product-list.html?search=${encodeURIComponent(keyword)}`;
+}
         const form = document.getElementById('publishForm');
         const loading = document.getElementById('loading');
 
