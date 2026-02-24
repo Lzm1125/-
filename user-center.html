@@ -80,5 +80,12 @@
             }, 1000);
         });
     </script>
+    function handleClick() {
+    if (confirm('确定要退出登录吗？')) {
+        localStorage.removeItem('userInfo'); // 清除本地用户信息
+        alert('已退出登录');
+        window.location.href = 'login.html'; // 跳转到登录页
+    }
+}
 </body>
 </html>
