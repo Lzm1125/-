@@ -107,7 +107,18 @@
                 refreshProducts();
             }
         });
-
+<div id="searchHint" style="padding: 10px 20px; background: #e9f5ff; display: none;">
+    搜索结果："<span id="searchKeyword"></span>"
+    <button 
+        onclick="clearSearch()" 
+        style="margin-left: 10px; padding: 5px 10px; background: #6c757d; color: white; border: none; border-radius: 4px; cursor: pointer;"
+    >
+        清除搜索
+    </button>
+</div>
+        function clearSearch() {
+    window.location.href = 'product-list.html';
+}
         // 刷新商品列表
         function refreshProducts() {
             const hint = document.getElementById('refreshHint');
@@ -126,6 +137,41 @@
 
         // 调用后端接口获取商品列表
         async function fetchProducts() {
+            // 调用后端接口获取商品列表（支持搜索）
+async function fetchProducts() {
+    if (isLoading) return;
+    isLoading = true;
+    const loading = document.getElementById('loading');
+    loading.style.display = 'block';
+
+    try {
+        // 从URL获取搜索关键词
+        const urlParams = new URLSearchParams(window.location.search);
+        const searchKeyword = urlParams.get('search');
+        let url = `/api/item/list?page=${page}&limit=10`;
+        if (searchKeyword) {
+            url += `&keyword=${encodeURIComponent(searchKeyword)}`;
+            // 显示当前搜索的关键词
+            document.getElementById('searchHint').style.display = 'block';
+            document.getElementById('searchKeyword').textContent = searchKeyword;
+        }
+
+        const res = await fetch(url);
+        const data = await res.json();
+
+        if (res.ok) {
+            renderProducts(data.items);
+        } else {
+            alert('获取商品列表失败：' + data.msg);
+        }
+    } catch (err) {
+        console.error(err);
+        alert('网络错误，请重试');
+    } finally {
+        isLoading = false;
+        loading.style.display = 'none';
+    }
+}
             if (isLoading) return;
             isLoading = true;
             const loading = document.getElementById('loading');
