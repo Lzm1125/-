@@ -19,7 +19,40 @@
         nav a:hover {
             text-decoration: underline;
         }
-        /* 按钮样式 */
+        /* 商品列表样式 */
+        .product-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+            padding: 20px;
+        }
+        .product-card {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 15px;
+            cursor: pointer;
+            transition: box-shadow 0.2s;
+        }
+        .product-card:hover {
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .product-card h3 {
+            margin: 0 0 10px;
+        }
+        .product-card .price {
+            color: #ff5722;
+            font-weight: bold;
+        }
+        /* 加载和刷新样式 */
+        .loading, .refresh-hint {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+        }
+        .refresh-hint {
+            display: none;
+            background: #f5f5f5;
+        }
         .btn {
             padding: 0.5rem 1rem;
             background: #007bff;
@@ -32,231 +65,120 @@
         .btn:active {
             background: #0056b3;
         }
-        /* 加载动画 */
-        .loading {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.5);
-            color: white;
-            text-align: center;
-            padding-top: 20%;
-        }
     </style>
 </head>
 <body>
     <!-- 导航栏 -->
     <nav>
-        <a href="index.html">首页</a>
-        <a href="product-list.html">商品列表</a>
-        <a href="product-detail.html">商品详情</a>
-        <a href="user-center.html">个人中心</a>
+        首页
+        商品列表
+        发布商品
+        商品详情
+        个人中心
+        登录
     </nav>
 
-    <h1>商品列表页基础结构</h1>
-    <button class="btn" onclick="handleClick()">查看商品详情</button>
-
-    <!-- 加载状态 -->
+    <div class="refresh-hint" id="refreshHint">下拉刷新...</div>
     <div class="loading" id="loading">加载中...</div>
-
-    <script>
-        // 按钮点击反馈
-        function handleClick() {
-            alert('跳转到商品详情页');
-            window.location.href = 'product-detail.html';
-        }
-
-        // 模拟页面加载
-        window.addEventListener('load', function() {
-            const loading = document.getElementById('loading');
-            loading.style.display = 'block';
-            setTimeout(() => {
-                loading.style.display = 'none';
-            }, 1000);
-        });
-    </script>
-    <!DOCTYPE html>
-<html lang="zh-CN">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>商品发布</title>
-    <style>
-        .publish-container {
-            max-width: 500px;
-            margin: 50px auto;
-            padding: 20px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-        }
-        .form-group {
-            margin-bottom: 15px;
-        }
-        label {
-            display: block;
-            margin-bottom: 5px;
-        }
-        input, textarea, select {
-            width: 100%;
-            padding: 8px;
-            box-sizing: border-box;
-        }
-        textarea {
-            height: 100px;
-        }
-        .btn {
-            width: 100%;
-            padding: 10px;
-            background: #28a745;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-        .btn:active {
-            background: #218838;
-        }
-        .loading {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.5);
-            color: white;
-            text-align: center;
-            padding-top: 20%;
-        }
-        .error {
-            color: red;
-            font-size: 0.9em;
-        }
-    </style>
-</head>
-<body>
-    <div class="publish-container">
-        <h2>发布商品</h2>
-        <form id="publishForm">
-            <div class="form-group">
-                <label for="name">商品名称</label>
-                <input type="text" id="name" required>
-                <div class="error" id="nameError"></div>
-            </div>
-            <div class="form-group">
-                <label for="description">商品描述</label>
-                <textarea id="description" required></textarea>
-                <div class="error" id="descError"></div>
-            </div>
-            <div class="form-group">
-                <label for="price">价格</label>
-                <input type="number" id="price" step="0.01" required>
-                <div class="error" id="priceError"></div>
-            </div>
-            <div class="form-group">
-                <label for="category">分类</label>
-                <select id="category" required>
-                    <option value="">请选择分类</option>
-                    <option value="electronics">电子产品</option>
-                    <option value="clothing">服装</option>
-                    <option value="books">书籍</option>
-                    <option value="other">其他</option>
-                </select>
-                <div class="error" id="catError"></div>
-            </div>
-            <div class="form-group">
-                <label for="image">商品图片</label>
-                <input type="file" id="image" accept="image/*">
-            </div>
-            <button type="submit" class="btn">发布商品</button>
-        </form>
+    <div class="product-list" id="productList"></div>
+    <div style="text-align: center; padding: 20px;">
+        <button class="btn" id="loadMore">加载更多</button>
     </div>
 
-    <div class="loading" id="loading">发布中...</div>
-
     <script>
-        const form = document.getElementById('publishForm');
-        const loading = document.getElementById('loading');
+        let page = 1;
+        let isLoading = false;
+        let startTouchY = 0;
 
-        form.addEventListener('submit', async (e) => {
-            e.preventDefault();
+        // 页面加载时获取第一页数据
+        window.addEventListener('load', () => {
+            fetchProducts();
+            checkLoginStatus();
+        });
 
-            // 1. 表单验证
-            const name = document.getElementById('name').value.trim();
-            const desc = document.getElementById('description').value.trim();
-            const price = document.getElementById('price').value;
-            const category = document.getElementById('category').value;
+        // 下拉刷新监听
+        document.addEventListener('touchstart', (e) => {
+            startTouchY = e.touches[0].clientY;
+        });
 
-            let valid = true;
-            if (!name) {
-                document.getElementById('nameError').textContent = '商品名称不能为空';
-                valid = false;
-            } else {
-                document.getElementById('nameError').textContent = '';
+        document.addEventListener('touchend', (e) => {
+            const endTouchY = e.changedTouches[0].clientY;
+            if (endTouchY - startTouchY > 100 && window.scrollY === 0) {
+                refreshProducts();
             }
-            if (!desc) {
-                document.getElementById('descError').textContent = '商品描述不能为空';
-                valid = false;
-            } else {
-                document.getElementById('descError').textContent = '';
-            }
-            if (!price || price <= 0) {
-                document.getElementById('priceError').textContent = '价格必须大于0';
-                valid = false;
-            } else {
-                document.getElementById('priceError').textContent = '';
-            }
-            if (!category) {
-                document.getElementById('catError').textContent = '请选择分类';
-                valid = false;
-            } else {
-                document.getElementById('catError').textContent = '';
-            }
+        });
 
-            if (!valid) return;
+        // 刷新商品列表
+        function refreshProducts() {
+            const hint = document.getElementById('refreshHint');
+            hint.style.display = 'block';
+            page = 1;
+            fetchProducts().finally(() => {
+                hint.style.display = 'none';
+            });
+        }
 
-            // 2. 准备提交数据
-            const formData = new FormData();
-            formData.append('name', name);
-            formData.append('description', desc);
-            formData.append('price', price);
-            formData.append('category', category);
-            const imageFile = document.getElementById('image').files[0];
-            if (imageFile) {
-                formData.append('image', imageFile);
-            }
+        // 加载更多商品
+        document.getElementById('loadMore').addEventListener('click', () => {
+            page++;
+            fetchProducts();
+        });
 
-            // 3. 显示加载状态
+        // 调用后端接口获取商品列表
+        async function fetchProducts() {
+            if (isLoading) return;
+            isLoading = true;
+            const loading = document.getElementById('loading');
             loading.style.display = 'block';
 
             try {
-                // 4. 调用后端发布接口
-                const res = await fetch('/api/publish', {
-                    method: 'POST',
-                    body: formData
-                });
-
+                const res = await fetch(`/api/item/list?page=${page}&limit=10`);
                 const data = await res.json();
 
                 if (res.ok) {
-                    alert('商品发布成功！');
-                    window.location.href = 'product-list.html'; // 成功后跳转到商品列表
+                    renderProducts(data.items);
                 } else {
-                    alert('发布失败：' + data.msg);
+                    alert('获取商品列表失败：' + data.msg);
                 }
             } catch (err) {
                 console.error(err);
                 alert('网络错误，请重试');
             } finally {
-                // 5. 隐藏加载状态
+                isLoading = false;
                 loading.style.display = 'none';
             }
-        });
+        }
+
+        // 渲染商品卡片
+        function renderProducts(products) {
+            const list = document.getElementById('productList');
+            if (page === 1) list.innerHTML = ''; // 刷新时清空列表
+
+            products.forEach(item => {
+                const card = document.createElement('div');
+                card.className = 'product-card';
+                card.innerHTML = `
+                    <h3>${item.name}</h3>
+                    <p>${item.description}</p >
+                    <div class="price">¥${item.price}</div>
+                `;
+                // 点击跳转到商品详情页
+                card.addEventListener('click', () => {
+                    window.location.href = `product-detail.html?id=${item.id}`;
+                });
+                list.appendChild(card);
+            });
+        }
+
+        // 检查登录状态
+        function checkLoginStatus() {
+            const userInfo = localStorage.getItem('userInfo');
+            const loginLink = document.getElementById('loginLink');
+            if (userInfo) {
+                loginLink.textContent = '个人中心';
+                loginLink.href = 'user-center.html';
+            }
+        }
     </script>
-</body>
-</html>
 </body>
 </html>
