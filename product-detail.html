@@ -75,7 +75,40 @@
             setTimeout(() => {
                 loading.style.display = 'none';
             }, 1000);
-        });
+        }
+                               window.addEventListener('load', function() {
+    // 从 URL 获取商品 ID
+    const urlParams = new URLSearchParams(window.location.search);
+    const productId = urlParams.get('id');
+    if (productId) {
+        fetchProductDetail(productId);
+    }
+
+    // 模拟加载状态
+    const loading = document.getElementById('loading');
+    loading.style.display = 'block';
+    setTimeout(() => {
+        loading.style.display = 'none';
+    }, 1000);
+});
+
+// 调用后端接口获取商品详情
+async function fetchProductDetail(id) {
+    try {
+        const res = await fetch(`/api/item/detail?id=${id}`);
+        const data = await res.json();
+        if (res.ok) {
+            // 渲染商品详情
+            document.querySelector('h1').textContent = data.name;
+            // 其他字段渲染...
+        } else {
+            alert('获取商品详情失败：' + data.msg);
+        }
+    } catch (err) {
+        console.error(err);
+        alert('网络错误，请重试');
+    }
+});
     </script>
 </body>
 </html>
