@@ -236,7 +236,35 @@ def get_item_detail(item_id):
         'msg': '获取商品详情成功',
         'data': item.to_dict()
     }), 200
-# ====================== 新增接口结束 ======================
+# ====================== 商品列表 + 商品详情接口结束 ======================
+
+# ====================== 新增：用户个人中心接口 ======================
+# 6. 获取当前登录用户信息：/api/user/profile
+@app.route('/api/user/profile', methods=['GET'])
+@login_required  # 必须登录才能访问
+def get_user_profile():
+    return jsonify({
+        'code': 200,
+        'msg': '获取用户信息成功',
+        'data': current_user.to_dict()
+    }), 200
+
+# 7. 获取当前用户发布的商品列表：/api/user/items
+@app.route('/api/user/items', methods=['GET'])
+@login_required  # 必须登录才能访问
+def get_user_items():
+    # 查询当前用户发布的所有商品
+    user_items = Item.query.filter_by(seller_id=current_user.id).all()
+    item_list = [item.to_dict() for item in user_items]
+    return jsonify({
+        'code': 200,
+        'msg': '获取用户商品列表成功',
+        'data': {
+            'total': len(item_list),
+            'items': item_list
+        }
+    }), 200
+# ====================== 用户个人中心接口结束 ======================
 
 # 初始化数据库
 with app.app_context():
