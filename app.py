@@ -266,6 +266,64 @@ def get_user_items():
     }), 200
 # ====================== 用户个人中心接口结束 ======================
 
+# ====================== 新增：商品搜索接口 ======================
+@app.route('/api/item/search', methods=['GET'])
+def search_items():
+    """
+    商品搜索接口：支持关键词、价格区间、分类筛选
+    请求参数：keyword(可选)、min_price(可选)、max_price(可选)、category(可选)
+    """
+    # 1. 获取请求参数
+    keyword = request.args.get('keyword', '')
+    min_price = request.args.get('min_price')
+    max_price = request.args.get('max_price')
+    category = request.args.get('category', '')
+
+    # 2. 构建查询条件
+    query = Item.query  # 基础查询对象
+
+    # 关键词筛选（名称/描述）
+    if keyword:
+        query = query.filter(
+            db.or_(
+                Item.title.like(f'%{keyword}%'),
+                Item.description.like(f'%{keyword}%')
+            )
+        )
+
+    # 分类筛选
+    if category:
+        query = query.filter(Item.category == category)
+
+    # 价格区间筛选
+    if min_price:
+        try:
+            min_price = float(min_price)
+            query = query.filter(Item.price >= min_price)
+        except:
+            return jsonify({'code': 400, 'msg': '最低价格必须为数字'}), 400
+
+    if max_price:
+        try:
+            max_price = float(max_price)
+            query = query.filter(Item.price <= max_price)
+        except:
+            return jsonify({'code': 400, 'msg': '最高价格必须为数字'}), 400
+
+    # 3. 执行查询并序列化
+    items = query.all()
+    item_list = [item.to_dict() for item in items]
+
+    return jsonify({
+        'code': 200,
+        'msg': '商品搜索成功',
+        'data': {
+            'total': len(item_list),
+            'items': item_list
+        }
+    }), 200
+# ====================== 商品搜索接口结束 ======================
+
 # 初始化数据库
 with app.app_context():
     db.create_all()
