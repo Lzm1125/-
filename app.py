@@ -208,6 +208,36 @@ def get_all_items():
         'data': {'total': len(item_list), 'items': item_list}
     }), 200
 
+# ====================== 新增：商品列表 + 商品详情接口 ======================
+# 4. 商品列表接口：/api/item/list
+@app.route('/api/item/list', methods=['GET'])
+def get_item_list():
+    """获取所有商品列表，返回JSON格式"""
+    items = Item.query.all()
+    item_list = [item.to_dict() for item in items]
+    return jsonify({
+        'code': 200,
+        'msg': '获取商品列表成功',
+        'data': {
+            'total': len(item_list),
+            'items': item_list
+        }
+    }), 200
+
+# 5. 商品详情接口：/api/item/detail/<id>
+@app.route('/api/item/detail/<int:item_id>', methods=['GET'])
+def get_item_detail(item_id):
+    """获取单个商品详情，返回JSON格式"""
+    item = Item.query.get(item_id)
+    if not item:
+        return jsonify({'code': 404, 'msg': '商品不存在'}), 404
+    return jsonify({
+        'code': 200,
+        'msg': '获取商品详情成功',
+        'data': item.to_dict()
+    }), 200
+# ====================== 新增接口结束 ======================
+
 # 初始化数据库
 with app.app_context():
     db.create_all()
