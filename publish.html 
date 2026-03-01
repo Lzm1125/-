@@ -136,6 +136,14 @@
                 document.getElementById('catError').textContent = '';
             }
 
+            // 额外校验：登录状态（必须先登录才能发布）
+            const token = localStorage.getItem('token');
+            if (!token) {
+                alert('请先登录！');
+                window.location.href = 'login.html'; // 跳转到登录页
+                return;
+            }
+
             if (!valid) return;
 
             // 2. 准备提交数据
@@ -153,23 +161,32 @@
             loading.style.display = 'block';
 
             try {
-                // 4. 调用后端发布接口
-                const res = await fetch('/api/publish', {
+                // 4. 调用后端发布接口（核心修改点）
+                const res = await fetch('http://127.0.0.1:5000/api/item/publish', {
                     method: 'POST',
+                    headers: {
+                        // 携带登录token，后端需要验证
+                        'Authorization': `Bearer ${token}`
+                    },
                     body: formData
                 });
 
                 const data = await res.json();
 
-                if (res.ok) {
+                if (res.ok && data.code === 0) {
                     alert('商品发布成功！');
                     window.location.href = 'product-list.html'; // 成功后跳转到商品列表
                 } else {
-                    alert('发布失败：' + data.msg);
+                    alert('发布失败：' + (data.msg || '未知错误'));
+                    // 特殊处理：token过期/无效
+                    if (res.status === 401) {
+                        localStorage.removeItem('token');
+                        window.location.href = 'login.html';
+                    }
                 }
             } catch (err) {
-                console.error(err);
-                alert('网络错误，请重试');
+                console.error('发布请求失败：', err);
+                alert('网络错误，请检查后端服务是否启动');
             } finally {
                 // 5. 隐藏加载状态
                 loading.style.display = 'none';
