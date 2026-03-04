@@ -1,20 +1,29 @@
 # 校园闲置物品交易平台
+基于 Flask 开发的校园闲置交易小项目，实现核心交易功能。
 
-一个基于 Flask + HTML 的校园二手物品交易平台 MVP 版本。
+## 核心功能
+1. 用户登录
+2. 商品发布
+3. 商品列表查看
+4. 商品价格筛选搜索
 
-## 项目分工
-- **A负责人（组长）**：项目统筹、进度管理、代码审核
-- **B组员（前端）**：页面搭建、样式实现、交互逻辑
-- **C组员（后端）**：接口开发、数据库设计、业务逻辑
+## 运行方法
+1. 安装依赖：pip install flask
+2. 启动项目：python app.py
+3. 访问地址：http://127.0.0.1:5000
 
-## 技术栈
-- 前端：HTML5, CSS3, JavaScript
-- 后端：Python, Flask, SQLite
-- 协作：GitHub Issues + Projects 看板
+## 页面访问
+- 登录页：http://127.0.0.1:5000/login
+- 发布页：http://127.0.0.1:5000/publish
+- 商品列表：http://127.0.0.1:5000/product-list
 
-## 运行步骤
-1. 克隆仓库：`git clone https://github.com/Lzm1125/-.git`
-2. 进入目录：`cd -`
-3. 安装依赖：`pip install flask flask-cors`
-4. 启动服务：`python app.py`
-5. 访问：`http://localhost:5000`
+## 小组分工
+- 前端：负责所有页面搭建与交互
+- 后端：负责接口开发与数据库配置
+- 组长：负责任务分配、代码整合与文档编写
+# 部署说明
+## 本地运行
+1. 确保电脑安装了 Python
+2. 执行命令安装依赖：pip install flask
+3. 运行：python app.py
+4. 浏览器打开上述地址即可使用
